@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ja" dir="ltr">
+    <head>
+        <link rel="stylesheet" href="https://unpkg.com/ress/dist/ress.min.css">
+        <link rel="stylesheet" href="CSS\style.css">
+        <link rel="stylesheet" href="CSS\buttle_style.css">
+        <meta charset="utf-8">
+        <title>ドラクエ風戦闘画面</title>
+    </head>
+    <body>
+        <div class="field">
+            <div class="enemy">
+                <img src="img/cobra.png" width="85" height="100" class="motion"><br>
+                <p id="enemy_hp">HP:100</p>
+            </div>
+            <div class="effect"></div>
+            <div class="fighter">
+                <img src="img/empty.png" width="85" height="100" class="motion"><br>
+                <p id="fighter_hp">HP:100</p>
+            </div>
+
+        </div>
+        <div class="infomation">
+            <div class="command">
+                <ul>
+                    <li id="fight">たたかう</li>
+                    <li id="skill">すきる</li>
+                    <li id="escape">にげる</li>
+                </ul>
+            </div>
+            <div class="explain">
+                <p id="info">敵があらわれた!</p>
+                <p id="info2"></p>
+            </div>
+        </div>
+
+    </body>
+    <script src="js\character.js"></script>
+    <script src="js\buttle.js"></script>
+
+</html>

@@ -1,0 +1,56 @@
+/*----- 上部分 -----*/
+.field{
+    display:grid;
+    gap:10px;
+    width:300px;
+    margin: 50px 100px;
+    color:#fff;
+}
+.field p{
+    margin:0;
+}
+
+.enemy{
+    text-align: right;
+}
+
+.fighter{
+    text-align: left;
+}
+
+/*----- コマンド部分 -----*/
+.infomation{
+    color:#fff;
+    display:flex;
+}
+.command{
+    border: 3px solid;
+    margin-right: 5px;
+}
+
+.command ul{
+    width: 105px;
+    margin: 5px 5px;
+}
+
+.explain{
+    border: 3px solid;
+    width: 390px;
+    padding: 3px;
+}
+.explain p{
+    margin:0;
+}
+
+/*----- モーション部分 -----*/
+.motion{
+    animation-name:motion;
+    animation-duration:.7s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+}
+@keyframes motion {
+    0% { transform: rotateX(8deg) translate(0,1.2px); }
+    50% { transform: rotateX(-8deg) translate(0,-1.2px); }
+    100% { transform: rotateX(8deg) translate(0,1.2px); }
+}
