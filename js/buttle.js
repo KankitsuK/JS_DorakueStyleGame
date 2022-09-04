@@ -56,10 +56,13 @@ skill_action.addEventListener("click", function(){
     my_condition = enemy_attack(f_hp);
     f_hp = my_condition[0];
 
+    //通常時
     if(e_hp>0 && f_hp>0){
         enemy_hp.textContent='HP:'+ e_hp;
         fighter_hp.textContent='HP:'+f_hp;
         explain_action.innerHTML  = '<p id="info">' + condition[1] + 'のダメージをあたえた！<br>' + my_condition[1] + 'のダメージを受けた</p>';
+
+    //相打ち時、プレイヤーのHPを1にして戦闘勝利
     }else if(f_hp<=0 && e_hp<=0){
         explain_action.innerHTML  =
             condition[1] + 'のダメージをあたえた！<br>'
@@ -67,17 +70,22 @@ skill_action.addEventListener("click", function(){
         explain_action2.innerHTML = '<p id="info2">敵を倒した！</p>'
         enemy_hp.textContent='倒した！';
         fighter_hp.textContent='HP:1';
-        window.setTimeout(game_End, 500);
+        window.setTimeout(game_End_win, 500);
+    
+    //負け
     }else if(f_hp<0){
         enemy_hp.textContent='HP:'+ e_hp;
         fighter_hp.textContent='HP:0';
         explain_action.innerHTML  = '倒された……'
-        window.setTimeout(game_End, 500);
+        window.setTimeout(game_End_lose, 500);
+    
+    //勝ち
     }else{
         enemy_hp.textContent='倒した！';
-        window.setTimeout(game_End, 500);
+        window.setTimeout(game_End_win, 500);
     }
 });
+
 //カーソルを合わせた時
 skill_action.addEventListener("mouseover", function(){
     explain_action.textContent='相手に[ランダム]ダメージ:15~35';
@@ -136,6 +144,27 @@ function enemy_attack(hp){
 };
 
 /*----- ゲームを終了する -----*/
+//勝ったとき
+function game_End_win(){
+    flag = window.confirm("勇者よ、よくぞやった！");
+    if ( flag == true ){
+        window.location.href = 'top_page.html';
+    }else{
+        //なにもしない
+    }
+};
+
+//負けたとき
+function game_End_lose(){
+    flag = window.confirm("おお、死んでしまうとはなさけない！　もう一度立ち上がりなさい");
+    if ( flag == true ){
+        window.location.href = 'top_page.html';
+    }else{
+        //なにもしない
+    }
+};
+
+//にげる押下
 function game_End(){
     flag = window.confirm("ゲームを終了しますか？");
     if ( flag == true ){
@@ -144,3 +173,5 @@ function game_End(){
         //なにもしない
     }
 };
+
+
