@@ -16,11 +16,12 @@ var condition;
 var my_condition;
 var end_flg = false;
 
-/*-----敵の生成-----*/
+/*-----敵の画像生成-----*/
 img_no = Math.floor(Math.random() * (6 - 1) + 1);
 img = ["enemy01.png","enemy02.png","enemy03.png","enemy04.png","enemy05.png","enemy06.png"];
 enemy_img.src = "img/" + img[img_no];
 
+enemy_name = ["こうもり","ぷよスラ","シーツおばけ","ひのたま","パリピくらげ","ねこへいし"]
 /*-----キャラ生成-----*/
 
 
@@ -31,12 +32,16 @@ class Make_character{
         this.hp = hp;
     }
 }
-player = new Make_character("勇者",150);
-console.log(player.name);
-console.log(player.hp);
+//キャラ生成
+hp_num = Math.floor(Math.random() * (150 - 100) + 100);
+player = new Make_character("勇者",200);
+enemy = new Make_character(enemy_name[img_no],hp_num)
 
-hp = hp - 50;
-
+//HPを設定する
+fighter_hp.textContent='HP:'+ player.hp;
+enemy_hp.textContent='HP:'+ enemy.hp;
+f_hp = player.hp;
+e_hp = enemy.hp;
 
 /*----- [たたかう]に関する処理 -----*/
 //クリックしたとき
@@ -92,19 +97,19 @@ skill_action.addEventListener("click", function(){
         explain_action2.innerHTML = '<p id="info2">敵を倒した！</p>'
         enemy_hp.textContent='倒した！';
         fighter_hp.textContent='HP:1';
-        window.setTimeout(game_End_win, 500);
+        window.setTimeout(game_End('win'), 500);
 
     //負け
     }else if(f_hp<0){
         enemy_hp.textContent='HP:'+ e_hp;
         fighter_hp.textContent='HP:0';
         explain_action.innerHTML  = '倒された……'
-        window.setTimeout(game_End_lose, 500);
+        window.setTimeout(game_End('lose'), 500);
 
     //勝ち
     }else{
         enemy_hp.textContent='倒した！';
-        window.setTimeout(game_End_win, 500);
+        window.setTimeout(game_End('win'), 500);
     }
 });
 
@@ -123,7 +128,7 @@ escape_action.addEventListener("mouseover", function(){
 //クリックしたとき
 escape_action.addEventListener("click", function(event){
     event.stopPropagation();
-    game_End();
+    game_End('end');
 
 });
 
@@ -166,32 +171,63 @@ function enemy_attack(hp){
 };
 
 /*----- ゲームを終了する -----*/
-//勝ったとき
-function game_End_win(){
-    flag = window.confirm("勇者よ、よくぞやった！");
-    if ( flag == true ){
-        window.location.href = 'top_page.html';
-    }else{
-        //なにもしない
-    }
-};
+// //勝ったとき
+// function game_End_win(){
+//     flag = window.confirm("勇者よ、よくぞやった！");
+//     if ( flag == true ){
+//         window.location.href = 'top_page.html';
+//     }else{
+//         //なにもしない
+//     }
+// };
 
-//負けたとき
-function game_End_lose(){
-    flag = window.confirm("おお、死んでしまうとはなさけない！　もう一度立ち上がりなさい");
-    if ( flag == true ){
-        window.location.href = 'top_page.html';
-    }else{
-        //なにもしない
-    }
-};
+// //負けたとき
+// function game_End_lose(){
+//     flag = window.confirm("おお、死んでしまうとはなさけない！　もう一度立ち上がりなさい");
+//     if ( flag == true ){
+//         window.location.href = 'top_page.html';
+//     }else{
+//         //なにもしない
+//     }
+// };
+
+// // //にげる押下
+// // function game_End(){
+// //     flag = window.confirm("ゲームを終了しますか？");
+// //     if ( flag == true ){
+// //         window.location.href = 'top_page.html';
+// //     }else{
+// //         //なにもしない
+// //     }
+// // };
 
 //にげる押下
-function game_End(){
-    flag = window.confirm("ゲームを終了しますか？");
-    if ( flag == true ){
-        window.location.href = 'top_page.html';
-    }else{
-        //なにもしない
+function game_End(status){
+    switch(status){
+        case 'end':
+            flag = window.confirm("ゲームを終了しますか？");
+            if ( flag == true ){
+                window.location.href = 'top_page.html';
+            }else{
+                //なにもしない
+            }
+            break;
+        case 'win':
+            flag = window.confirm("勇者よ、よくぞやった！ もう一度戦うか？");
+            if ( flag == true ){
+                window.location.href = 'top_page.html';
+            }else{
+                //なにもしない
+            }
+            break;
+        case 'lose':
+            flag = window.confirm("おお、死んでしまうとはなさけない！　もう一度立ち上がりなさい");
+            if ( flag == true ){
+                window.location.href = 'top_page.html';
+            }else{
+                //なにもしない
+            }
+            break;
     }
+
 };
