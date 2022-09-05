@@ -17,8 +17,6 @@ new_character.addEventListener("click",function(){
 });
 
 function make_character(name,hp){
-    var character_status  = [];
-    character_status.push(name);
-    character_status.push(hp);
-    return (character_status);
+    this.name = name;
+    this.hp = hp
 }

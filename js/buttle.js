@@ -1,6 +1,7 @@
 ///各フィールドのID取得
 var explain_action = document.getElementById('info');//説明
 var explain_action2 = document.getElementById('info2');//説明
+var enemy_img = document.getElementById('enemy_img');//敵の画像
 var fight_action = document.getElementById('fight');//たたかう
 var skill_action = document.getElementById('skill');//すきる
 var escape_action = document.getElementById('escape');//にげる
@@ -14,6 +15,27 @@ var ene_cnd = [0,0];
 var condition;
 var my_condition;
 var end_flg = false;
+
+/*-----敵の生成-----*/
+img_no = Math.floor(Math.random() * (6 - 1) + 1);
+img = ["enemy01.png","enemy02.png","enemy03.png","enemy04.png","enemy05.png","enemy06.png"];
+enemy_img.src = "img/" + img[img_no];
+
+/*-----キャラ生成-----*/
+
+
+//コンストラクタ
+class Make_character{
+    constructor(name,hp){
+        this.name = name;
+        this.hp = hp;
+    }
+}
+player = new Make_character("勇者",150);
+console.log(player.name);
+console.log(player.hp);
+
+hp = hp - 50;
 
 
 /*----- [たたかう]に関する処理 -----*/
@@ -71,14 +93,14 @@ skill_action.addEventListener("click", function(){
         enemy_hp.textContent='倒した！';
         fighter_hp.textContent='HP:1';
         window.setTimeout(game_End_win, 500);
-    
+
     //負け
     }else if(f_hp<0){
         enemy_hp.textContent='HP:'+ e_hp;
         fighter_hp.textContent='HP:0';
         explain_action.innerHTML  = '倒された……'
         window.setTimeout(game_End_lose, 500);
-    
+
     //勝ち
     }else{
         enemy_hp.textContent='倒した！';
@@ -173,5 +195,3 @@ function game_End(){
         //なにもしない
     }
 };
-
-
