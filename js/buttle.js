@@ -8,23 +8,16 @@ var escape_action = document.getElementById('escape');//にげる
 var fighter_hp = document.getElementById('fighter_hp');
 var enemy_hp = document.getElementById('enemy_hp');
 
-var f_hp = 100;
-var e_hp = 100;
 var cnd = [0,0];
 var ene_cnd = [0,0];
 var condition;
 var my_condition;
 var end_flg = false;
+let win_count = 0;
+let lose_count = 0;
+let buttle_count = 0;
 
-/*-----敵の画像生成-----*/
-img_no = Math.floor(Math.random() * (6 - 1) + 1);
-img = ["enemy01.png","enemy02.png","enemy03.png","enemy04.png","enemy05.png","enemy06.png"];
-enemy_img.src = "img/" + img[img_no];
-
-enemy_name = ["こうもり","ぷよスラ","シーツおばけ","ひのたま","パリピくらげ","ねこへいし"]
 /*-----キャラ生成-----*/
-
-
 //コンストラクタ
 class Make_character{
     constructor(name,hp){
@@ -32,16 +25,28 @@ class Make_character{
         this.hp = hp;
     }
 }
-//キャラ生成
-hp_num = Math.floor(Math.random() * (150 - 100) + 100);
-player = new Make_character("勇者",200);
-enemy = new Make_character(enemy_name[img_no],hp_num)
-
-//HPを設定する
-fighter_hp.textContent='HP:'+ player.hp;
-enemy_hp.textContent='HP:'+ enemy.hp;
-f_hp = player.hp;
-e_hp = enemy.hp;
+//敵の生成
+function make_enemy(){
+    //敵の画像生成
+    img_no = Math.floor(Math.random() * (6 - 1) + 1);
+    img = ["enemy01.png","enemy02.png","enemy03.png","enemy04.png","enemy05.png","enemy06.png"];
+    enemy_name = ["こうもり","ぷよスラ","シーツおばけ","ひのたま","パリピくらげ","ねこへいし"]
+    enemy_img.src = "img/" + img[img_no];
+    //敵のHP、名前で敵を生成する
+    hp_num = Math.floor(Math.random() * (150 - 100) + 100);
+    enemy = new Make_character(enemy_name[img_no],hp_num);
+    enemy_hp.textContent='HP:'+ enemy.hp;
+    e_hp = enemy.hp;
+}
+function make_player(){
+    //プレイヤーキャラの生成
+    player = new Make_character("勇者",200);
+    fighter_hp.textContent='HP:'+ player.hp;
+    f_hp = player.hp;
+}
+//つくる
+make_enemy();
+make_player();
 
 /*----- [たたかう]に関する処理 -----*/
 //クリックしたとき
@@ -60,20 +65,24 @@ fight_action.addEventListener("click", function(){
         explain_action.innerHTML  = condition[1] + 'のダメージをあたえた！<br>' + my_condition[1] + 'のダメージを受けた<br>ギリギリのところで持ちこたえた……!</p>';
         enemy_hp.textContent='倒した！';
         fighter_hp.textContent='HP:1';
-        window.setTimeout(game_End, 1000);
+        win_count += 1;
     }else if(f_hp<0){
         fighter_hp.textContent='倒された……';
-        window.setTimeout(game_End, 1000);
+        lose_count += 1
     }else{
         enemy_hp.textContent='倒した！';
-        window.setTimeout(game_End, 1000);
+        win_count += 1;
     }
-
+    console.log('win: '+win_count);
+    console.log('lose: '+lose_count);
+    console.log(buttle_count);
+    console.log(enemy);
   });
 //カーソルを合わせた時
 fight_action.addEventListener("mouseover", function(){
     explain_action.textContent='相手に[固定]ダメージ:20';
     });
+
 
 /*----- [すきる]に関する処理 -----*/
 //クリックしたとき
@@ -104,13 +113,14 @@ skill_action.addEventListener("click", function(){
         enemy_hp.textContent='HP:'+ e_hp;
         fighter_hp.textContent='HP:0';
         explain_action.innerHTML  = '倒された……'
-        window.setTimeout(game_End('lose'), 500);
+        game_End_lose();
 
     //勝ち
     }else{
         enemy_hp.textContent='倒した！';
-        window.setTimeout(game_End('win'), 500);
+        window.setTimeout(game_End_win, 500);
     }
+
 });
 
 //カーソルを合わせた時
@@ -128,9 +138,22 @@ escape_action.addEventListener("mouseover", function(){
 //クリックしたとき
 escape_action.addEventListener("click", function(event){
     event.stopPropagation();
-    game_End('end');
+    game_End();
 
 });
+
+/*-----戦闘管理-----*/
+function action(){
+    condition = skill(e_hp);
+    e_hp = condition[0];
+    my_condition = enemy_attack(f_hp);
+    f_hp = my_condition[0];
+}
+
+/*-----戦闘終了判定-----*/
+function check_buttle(){
+
+}
 
 /*----- [たたかう]の内部処理 -----*/
 function attack(hp){
@@ -159,7 +182,7 @@ function skill(hp){
 
 /*----- 敵側の内部処理 -----*/
 function enemy_attack(hp){
-    damage = Math.floor(Math.random() * (35 - 15) + 15);
+    damage = Math.floor(Math.random() * (15 - 15) + 15);
     hp = hp - damage;
     ene_cnd[0] = hp;
     ene_cnd[1] = damage;
@@ -171,63 +194,30 @@ function enemy_attack(hp){
 };
 
 /*----- ゲームを終了する -----*/
-// //勝ったとき
-// function game_End_win(){
-//     flag = window.confirm("勇者よ、よくぞやった！");
-//     if ( flag == true ){
-//         window.location.href = 'top_page.html';
-//     }else{
-//         //なにもしない
-//     }
-// };
-
-// //負けたとき
-// function game_End_lose(){
-//     flag = window.confirm("おお、死んでしまうとはなさけない！　もう一度立ち上がりなさい");
-//     if ( flag == true ){
-//         window.location.href = 'top_page.html';
-//     }else{
-//         //なにもしない
-//     }
-// };
-
-// // //にげる押下
-// // function game_End(){
-// //     flag = window.confirm("ゲームを終了しますか？");
-// //     if ( flag == true ){
-// //         window.location.href = 'top_page.html';
-// //     }else{
-// //         //なにもしない
-// //     }
-// // };
-
-//にげる押下
-function game_End(status){
-    switch(status){
-        case 'end':
-            flag = window.confirm("ゲームを終了しますか？");
-            if ( flag == true ){
-                window.location.href = 'top_page.html';
-            }else{
-                //なにもしない
-            }
-            break;
-        case 'win':
-            flag = window.confirm("勇者よ、よくぞやった！ もう一度戦うか？");
-            if ( flag == true ){
-                window.location.href = 'top_page.html';
-            }else{
-                //なにもしない
-            }
-            break;
-        case 'lose':
-            flag = window.confirm("おお、死んでしまうとはなさけない！　もう一度立ち上がりなさい");
-            if ( flag == true ){
-                window.location.href = 'top_page.html';
-            }else{
-                //なにもしない
-            }
-            break;
+//勝ったとき
+function game_End_win(){
+    flag = window.confirm("勇者よ、よくぞやった！");
+    if ( flag == true ){
+        window.location.href = 'top_page.html';
+    }else{
+        //なにもしない
     }
-
+};
+//負けたとき
+function game_End_lose(){
+    flag = window.confirm("おお、死んでしまうとはなさけない もう一度立ち上がりなさい");
+    if ( flag == true ){
+        window.location.href = 'top_page.html';
+    }else{
+        //なにもしない
+    }
+};
+//にげる押下
+function game_End(){
+    flag = window.confirm("ゲームを終了しますか？");
+    if ( flag == true ){
+        window.location.href = 'top_page.html';
+    }else{
+        //なにもしない
+    }
 };
