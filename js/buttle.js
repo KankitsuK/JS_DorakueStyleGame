@@ -8,226 +8,179 @@ var escape_action = document.getElementById('escape');//にげる
 var fighter_hp = document.getElementById('fighter_hp');
 var enemy_hp = document.getElementById('enemy_hp');
 
-var f_hp = 100;
-var e_hp = 100;
-var cnd = [0,0];
-var ene_cnd = [0,0];
-var condition;
-var my_condition;
-var end_flg = false;
+var damage;
+var end_flg;
+let win_count = 0;
+let lose_count = 0;
+let buttle_count = 0;
 
-/*-----敵の画像生成-----*/
-img_no = Math.floor(Math.random() * (6 - 1) + 1);
-img = ["enemy01.png","enemy02.png","enemy03.png","enemy04.png","enemy05.png","enemy06.png"];
-enemy_img.src = "img/" + img[img_no];
-
-enemy_name = ["こうもり","ぷよスラ","シーツおばけ","ひのたま","パリピくらげ","ねこへいし"]
 /*-----キャラ生成-----*/
-
-
 //コンストラクタ
 class Make_character{
     constructor(name,hp){
         this.name = name;
         this.hp = hp;
-    }
+        return [name,hp];
+    };
 }
-//キャラ生成
-hp_num = Math.floor(Math.random() * (150 - 100) + 100);
-player = new Make_character("勇者",200);
-enemy = new Make_character(enemy_name[img_no],hp_num)
 
-//HPを設定する
-fighter_hp.textContent='HP:'+ player.hp;
-enemy_hp.textContent='HP:'+ enemy.hp;
-f_hp = player.hp;
-e_hp = enemy.hp;
+//敵の生成
+function make_enemy(){
+    //敵の画像生成
+    img_no = Math.floor(Math.random() * (6 - 1) + 1);
+    img = ["enemy01.png","enemy02.png","enemy03.png","enemy04.png","enemy05.png","enemy06.png"];
+    enemy_name = ["こうもり","ぷよスラ","シーツおばけ","ひのたま","パリピくらげ","ねこへいし"]
+    enemy_img.src = "img/" + img[img_no];
+    //敵のHP、名前で敵を生成する
+    hp_num = Math.floor(Math.random() * (150 - 100) + 100);
+    enemy = new Make_character(enemy_name[img_no],hp_num);
+    enemy_hp.textContent='HP:'+ enemy[1];
+}
+//プレイヤーキャラの生成
+function make_player(){
+    player = new Make_character("勇者",200);
+    fighter_hp.textContent='HP:'+ player[1];
+}
 
-/*----- [たたかう]に関する処理 -----*/
+make_enemy();
+make_player();
+
+/*-----たたかう-----*/
 //クリックしたとき
 fight_action.addEventListener("click", function(){
-    condition = attack(e_hp);
-    e_hp = condition[0];
-    my_condition = enemy_attack(f_hp);
-    f_hp = my_condition[0];
+    //ゲームの全体管理関数を呼び出す
+    buttle_action_controller('attack');
 
-    //プレイヤーのたたかう処理
-    if(e_hp>0 && f_hp>0){
-        enemy_hp.textContent='HP:'+ e_hp;
-        fighter_hp.textContent='HP:'+f_hp;
-        explain_action.innerHTML  = '<p id="info">' + condition[1] + 'のダメージをあたえた！<br>' + my_condition[1] + 'のダメージを受けた</p>';
-    }else if(f_hp<=0 && e_hp<=0){
-        explain_action.innerHTML  = condition[1] + 'のダメージをあたえた！<br>' + my_condition[1] + 'のダメージを受けた<br>ギリギリのところで持ちこたえた……!</p>';
-        enemy_hp.textContent='倒した！';
-        fighter_hp.textContent='HP:1';
-        window.setTimeout(game_End, 1000);
-    }else if(f_hp<0){
-        fighter_hp.textContent='倒された……';
-        window.setTimeout(game_End, 1000);
-    }else{
-        enemy_hp.textContent='倒した！';
-        window.setTimeout(game_End, 1000);
+    //終わりならゲーム終了させる
+    if(end_flg[0]){
+        game_end(end_flg[1]);
     }
 
   });
 //カーソルを合わせた時
 fight_action.addEventListener("mouseover", function(){
+    text = explain_action.textContent;
     explain_action.textContent='相手に[固定]ダメージ:20';
     });
 
 /*----- [すきる]に関する処理 -----*/
 //クリックしたとき
 skill_action.addEventListener("click", function(){
-    condition = skill(e_hp);
-    e_hp = condition[0];
-    my_condition = enemy_attack(f_hp);
-    f_hp = my_condition[0];
-
-    //通常時
-    if(e_hp>0 && f_hp>0){
-        enemy_hp.textContent='HP:'+ e_hp;
-        fighter_hp.textContent='HP:'+f_hp;
-        explain_action.innerHTML  = '<p id="info">' + condition[1] + 'のダメージをあたえた！<br>' + my_condition[1] + 'のダメージを受けた</p>';
-
-    //相打ち時、プレイヤーのHPを1にして戦闘勝利
-    }else if(f_hp<=0 && e_hp<=0){
-        explain_action.innerHTML  =
-            condition[1] + 'のダメージをあたえた！<br>'
-            + my_condition[1] + 'のダメージを受けた</p><br><p id="info">ギリギリのところで持ちこたえた……!';
-        explain_action2.innerHTML = '<p id="info2">敵を倒した！</p>'
-        enemy_hp.textContent='倒した！';
-        fighter_hp.textContent='HP:1';
-        window.setTimeout(game_End('win'), 500);
-
-    //負け
-    }else if(f_hp<0){
-        enemy_hp.textContent='HP:'+ e_hp;
-        fighter_hp.textContent='HP:0';
-        explain_action.innerHTML  = '倒された……'
-        window.setTimeout(game_End('lose'), 500);
-
-    //勝ち
-    }else{
-        enemy_hp.textContent='倒した！';
-        window.setTimeout(game_End('win'), 500);
-    }
+    buttle_action_controller('skill');
 });
-
 //カーソルを合わせた時
 skill_action.addEventListener("mouseover", function(){
     explain_action.textContent='相手に[ランダム]ダメージ:15~35';
 });
-
 
 /*----- [にげる]に関する処理 -----*/
 //カーソルを合わせた時
 escape_action.addEventListener("mouseover", function(){
     explain_action.textContent='戦闘を終了する';
     });
-
 //クリックしたとき
 escape_action.addEventListener("click", function(event){
     event.stopPropagation();
-    game_End('end');
-
+    game_end();
 });
 
-/*----- [たたかう]の内部処理 -----*/
-function attack(hp){
-    hp = hp - 20;
-    cnd[0] = hp;
-    cnd[1] = 20;
-    if(hp > 0){
-        return cnd;
+//ダメージ計算
+function attack(attack_method){
+    //こうげき
+    if(attack_method == 'attack'){
+        return 20;
+    //すきる
+    }else if(attack_method == 'skill') {
+        skill_damage = Math.floor(Math.random() * (35 - 15) + 15);
+        return skill_damage;
+    }else if(attack_method == 'enemy'){
+        skill_damage = Math.floor(Math.random() * (45 - 15) + 15);
+        return skill_damage;
     }else{
-        return cnd;
+        console.error("不正な値が入力されています");
     }
+}
+
+//勝敗判定
+function check_buttle(){
+    //通常時
+    if(enemy[1] > 0 && player[1] > 0){
+        return [false, 'continue'];
+    //相打ち時、プレイヤーのHPを1にして戦闘勝利
+    }else if(enemy[1] <= 0 && player[1] <= 0){
+        player[1] = 1;
+        enemy[1] = 0;
+        return [true, 'narrow_victory'];
+    //勝ち
+    }else if(enemy[1] <= 0){
+        enemy[1] = 0;
+        return [true, 'win'];
+    //負け
+    }else if(player[1] <= 0 || player[1] == 0){
+        player[1] = 0;
+        return [true, 'lose'];
+    }
+}
+
+//表示の更新(戦闘続行)
+function update_content_continue(chara1,chara2,dm1,dm2,flg){
+    text = '<p id="info">' + chara1 + 'は' +chara2+ 'に' +dm1+ 'のダメージをあたえた！<br>' +chara2+ 'から' +dm2+ 'のダメージを受けた</p>';
+    explain_action.innerHTML = text;
+    enemy_hp.textContent = 'HP: ' + enemy[1];
+    fighter_hp.textContent = 'HP: ' + player[1]
 };
 
-/*----- [すきる]の内部処理 -----*/
-function skill(hp){
-    skill_damage = Math.floor(Math.random() * (35 - 15) + 15);
-    hp = hp - skill_damage
-    cnd[0] = hp;
-    cnd[1] = skill_damage;
-    if(hp > 0){
-        return cnd;
-    }else{
-        return cnd;
+//表示の更新
+function update_content_end(chara1,chara2,dm1,dm2,flg){
+    if(flg == 'win'){
+        explain_action.innerHTML = '<p id="info">' + chara1 + 'は' +chara2+'に' +dm1+ 'のダメージをあたえた！<br>' +chara2+ 'は倒れた</p>';
+        enemy_hp.textContent = 'HP: ' + enemy[1];
+        fighter_hp.textContent = 'HP: ' + player[1]
+    }else if(flg == 'narrow_victory'){
+        explain_action.innerHTML = '<p id="info">' + chara1 + 'は' +chara2+'に' +dm1+ 'のダメージをあたえた！<br>' +chara2+ 'から' +dm2+ 'のダメージを受けたが、持ちこたえた！<br>'+chara2+'は倒れた</p>';
+        enemy_hp.textContent = 'HP: ' + enemy[1];
+        fighter_hp.textContent = 'HP: ' + player[1]
+    }else if(flg == 'lose'){
+        explain_action.innerHTML = '<p id="info">' + chara1 + 'は' +chara2+'に' +dm1+ 'のダメージをあたえた！<br>' +chara2+ 'から' +dm2+ 'のダメージを受けた<br>'+chara1+'は倒れた……</p>';
+        enemy_hp.textContent = 'HP: ' + enemy[1];
+        fighter_hp.textContent = 'HP: ' + player[1]
     }
-};
-
-/*----- 敵側の内部処理 -----*/
-function enemy_attack(hp){
-    damage = Math.floor(Math.random() * (35 - 15) + 15);
-    hp = hp - damage;
-    ene_cnd[0] = hp;
-    ene_cnd[1] = damage;
-    if(hp > 0){
-        return ene_cnd;
-    }else{
-        return ene_cnd;
-    }
-};
+}
 
 /*----- ゲームを終了する -----*/
-// //勝ったとき
-// function game_End_win(){
-//     flag = window.confirm("勇者よ、よくぞやった！");
-//     if ( flag == true ){
-//         window.location.href = 'top_page.html';
-//     }else{
-//         //なにもしない
-//     }
-// };
-
-// //負けたとき
-// function game_End_lose(){
-//     flag = window.confirm("おお、死んでしまうとはなさけない！　もう一度立ち上がりなさい");
-//     if ( flag == true ){
-//         window.location.href = 'top_page.html';
-//     }else{
-//         //なにもしない
-//     }
-// };
-
-// // //にげる押下
-// // function game_End(){
-// //     flag = window.confirm("ゲームを終了しますか？");
-// //     if ( flag == true ){
-// //         window.location.href = 'top_page.html';
-// //     }else{
-// //         //なにもしない
-// //     }
-// // };
-
-//にげる押下
-function game_End(status){
-    switch(status){
-        case 'end':
-            flag = window.confirm("ゲームを終了しますか？");
-            if ( flag == true ){
-                window.location.href = 'top_page.html';
-            }else{
-                //なにもしない
-            }
-            break;
-        case 'win':
-            flag = window.confirm("勇者よ、よくぞやった！ もう一度戦うか？");
-            if ( flag == true ){
-                window.location.href = 'top_page.html';
-            }else{
-                //なにもしない
-            }
-            break;
-        case 'lose':
-            flag = window.confirm("おお、死んでしまうとはなさけない！　もう一度立ち上がりなさい");
-            if ( flag == true ){
-                window.location.href = 'top_page.html';
-            }else{
-                //なにもしない
-            }
-            break;
+function game_end(flg){
+    //勝ったとき
+    if(flg == 'win' || flg == 'narrow_victory'){
+        window.alert(player[0] + 'よ、よくやった！ 厄介な魔物を倒したぞ');
+    }else if (flg == 'lose') {
+        window.alert('おお' +player[0]+ '！しんでしまうとはなさけない…。もう一度戦いなさい');
+    } else {
+        flag = window.confirm("ゲームを終了しますか？");
+        if ( flag ){
+            //OKならトップページに戻る
+            window.location.href = 'top_page.html';
+        }else{
+            //なにもしない
+        }
     }
+}
 
-};
+//ゲーム全体の管理
+function buttle_action_controller(click){
+    //ダメージ計算(敵側)
+    eDamage = attack(click);
+    enemy[1]-=eDamage;
+
+    //ダメージ計算(プレイヤー)  ※end_flgがtrueの場合、HP表示を行いゲーム終了
+    pDamage = attack(click);
+    player[1]-=pDamage;
+
+    //勝敗判定と表示更新
+    end_flg = check_buttle();
+    if(end_flg[0] == false){
+        //HP表示更新
+        update_content_continue(player[0],enemy[0],eDamage,pDamage,end_flg);
+    }else {
+        update_content_end(player[0],enemy[0],eDamage,pDamage,end_flg[1]);
+    }
+}
