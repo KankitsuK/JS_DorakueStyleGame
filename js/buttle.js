@@ -32,13 +32,13 @@ function make_enemy(){
     enemy_name = ["こうもり","ぷよスラ","シーツおばけ","ひのたま","パリピくらげ","ねこへいし"]
     enemy_img.src = "img/" + img[img_no];
     //敵のHP、名前で敵を生成する
-    hp_num = Math.floor(Math.random() * (150 - 100) + 100);
+    hp_num = Math.floor(Math.random() * (200 - 100) + 100);
     enemy = new Make_character(enemy_name[img_no],hp_num);
     enemy_hp.textContent='HP:'+ enemy[1];
 }
 //プレイヤーキャラの生成
 function make_player(){
-    player = new Make_character("勇者",200);
+    player = new Make_character("勇者",150);
     fighter_hp.textContent='HP:'+ player[1];
 }
 
@@ -48,7 +48,7 @@ make_player();
 /*-----たたかう-----*/
 //クリックしたとき
 fight_action.addEventListener("click", function(){
-    //ゲームの全体管理関数を呼び出す
+    //ゲームの全体管理を呼び出す
     buttle_action_controller('attack');
 
     //終わりならゲーム終了させる
@@ -66,7 +66,13 @@ fight_action.addEventListener("mouseover", function(){
 /*----- [すきる]に関する処理 -----*/
 //クリックしたとき
 skill_action.addEventListener("click", function(){
+    //ゲームの全体管理を呼び出す
     buttle_action_controller('skill');
+
+    //終わりならゲーム終了させる
+    if(end_flg[0]){
+        game_end(end_flg[1]);
+    }
 });
 //カーソルを合わせた時
 skill_action.addEventListener("mouseover", function(){
@@ -86,19 +92,26 @@ escape_action.addEventListener("click", function(event){
 
 //ダメージ計算
 function attack(attack_method){
+    randamAction = Math.floor(Math.random() * (1 - 10) + 10);
+    //if(randamAction <= 2){console.log(randamAction)}
+    damage = 0;
     //こうげき
     if(attack_method == 'attack'){
-        return 20;
+        damage = 20;
     //すきる
     }else if(attack_method == 'skill') {
-        skill_damage = Math.floor(Math.random() * (35 - 15) + 15);
-        return skill_damage;
+        damage = Math.floor(Math.random() * (40 - 15) + 15);
     }else if(attack_method == 'enemy'){
-        skill_damage = Math.floor(Math.random() * (45 - 15) + 15);
-        return skill_damage;
+        console.log(randamAction)
+        damage = Math.floor(Math.random() * (35 - 15) + 15);
     }else{
         console.error("不正な値が入力されています");
+        console.error("引数: " + attack_method);
     }
+
+    //会心の一撃判定
+    if(randamAction <= 3){damage = damage*2}
+    return damage;
 }
 
 //勝敗判定
@@ -151,9 +164,11 @@ function update_content_end(chara1,chara2,dm1,dm2,flg){
 function game_end(flg){
     //勝ったとき
     if(flg == 'win' || flg == 'narrow_victory'){
-        window.alert(player[0] + 'よ、よくやった！ 厄介な魔物を倒したぞ');
+        window.alert(player[0] + 'よくやった！ 厄介な魔物を倒したぞ');
+        window.location.href = 'top_page.html';
     }else if (flg == 'lose') {
         window.alert('おお' +player[0]+ '！しんでしまうとはなさけない…。もう一度戦いなさい');
+        window.location.href = 'top_page.html';
     } else {
         flag = window.confirm("ゲームを終了しますか？");
         if ( flag ){
@@ -170,9 +185,8 @@ function buttle_action_controller(click){
     //ダメージ計算(敵側)
     eDamage = attack(click);
     enemy[1]-=eDamage;
-
     //ダメージ計算(プレイヤー)  ※end_flgがtrueの場合、HP表示を行いゲーム終了
-    pDamage = attack(click);
+    pDamage = attack('enemy');
     player[1]-=pDamage;
 
     //勝敗判定と表示更新
