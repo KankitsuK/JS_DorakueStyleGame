@@ -13,6 +13,8 @@ var end_flg;
 let win_count = 0;
 let lose_count = 0;
 let buttle_count = 0;
+const explain_attack = '相手に[固定]ダメージ:20';
+const explain_skill = '相手に[ランダム]ダメージ:15~35';
 
 /*-----キャラ生成-----*/
 //コンストラクタ
@@ -32,7 +34,7 @@ function make_enemy(){
     enemy_name = ["こうもり","ぷよスラ","シーツおばけ","ひのたま","パリピくらげ","ねこへいし"]
     enemy_img.src = "img/" + img[img_no];
     //敵のHP、名前で敵を生成する
-    hp_num = Math.floor(Math.random() * (200 - 100) + 100);
+    hp_num = Math.floor(Math.random() * (200 - 150) + 150);
     enemy = new Make_character(enemy_name[img_no],hp_num);
     enemy_hp.textContent='HP:'+ enemy[1];
 }
@@ -53,14 +55,15 @@ fight_action.addEventListener("click", function(){
 
     //終わりならゲーム終了させる
     if(end_flg[0]){
-        game_end(end_flg[1]);
+        event.stopPropagation();
+        setTimeout(() => {game_end(end_flg[1])}, 500);
     }
 
   });
 //カーソルを合わせた時
 fight_action.addEventListener("mouseover", function(){
     text = explain_action.textContent;
-    explain_action.textContent='相手に[固定]ダメージ:20';
+    explain_action.textContent= explain_attack;
     });
 
 /*----- [すきる]に関する処理 -----*/
@@ -71,13 +74,15 @@ skill_action.addEventListener("click", function(){
 
     //終わりならゲーム終了させる
     if(end_flg[0]){
-        game_end(end_flg[1]);
+        event.stopPropagation();
+        setTimeout(() => {game_end(end_flg[1])}, 500);
     }
 });
 //カーソルを合わせた時
 skill_action.addEventListener("mouseover", function(){
-    explain_action.textContent='相手に[ランダム]ダメージ:15~35';
+    explain_action.textContent = explain_skill;
 });
+
 
 /*----- [にげる]に関する処理 -----*/
 //カーソルを合わせた時
@@ -93,24 +98,23 @@ escape_action.addEventListener("click", function(event){
 //ダメージ計算
 function attack(attack_method){
     randamAction = Math.floor(Math.random() * (1 - 10) + 10);
-    //if(randamAction <= 2){console.log(randamAction)}
     damage = 0;
     //こうげき
     if(attack_method == 'attack'){
         damage = 20;
     //すきる
     }else if(attack_method == 'skill') {
-        damage = Math.floor(Math.random() * (40 - 15) + 15);
+        damage = Math.floor(Math.random() * (35 - 15) + 15);
     }else if(attack_method == 'enemy'){
         console.log(randamAction)
-        damage = Math.floor(Math.random() * (35 - 15) + 15);
+        damage = Math.floor(Math.random() * (40 - 15) + 15);
     }else{
         console.error("不正な値が入力されています");
         console.error("引数: " + attack_method);
     }
 
     //会心の一撃判定
-    if(randamAction <= 3){damage = damage*2}
+    if(randamAction <= 3 || attack_method == 'skill' || attack_method == 'attack'){damage = damage*2}
     return damage;
 }
 
