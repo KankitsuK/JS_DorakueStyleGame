@@ -2,27 +2,19 @@
 .field{
     display:grid;
     gap:10px;
-    width:300px;
-    margin: 50px 100px;
     color:#fff;
+    padding: 1% 10% 5% 10%;
 }
 .field p{
     margin:0;
 }
 
 .enemy{
-    width:500px;
     text-align: right;
 }
 
 .fighter{
     text-align: left;
-}
-.f_state{
-    display: flex;
-    align-items: center;
-    grid-gap: 30px;
-    flex-wrap: nowrap;
 }
 
 /*----- コマンド部分 -----*/
@@ -42,8 +34,8 @@
 
 .explain{
     border: 3px solid;
-    width: 590px;
     padding: 3px;
+    width:100%;
 }
 .explain p{
     margin:0;

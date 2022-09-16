@@ -1,10 +1,11 @@
 ///各フィールドのID取得
-var explain_action = document.getElementById('info');//説明
-var explain_action2 = document.getElementById('info2');//説明
-var enemy_img = document.getElementById('enemy_img');//敵の画像
-var fight_action = document.getElementById('fight');//たたかう
-var skill_action = document.getElementById('skill');//すきる
-var escape_action = document.getElementById('escape');//にげる
+var explain_action = document.getElementById('info');               //説明
+var explain_action2 = document.getElementById('info2');             //説明
+var enemy_img = document.getElementById('enemy_img');               //敵の画像
+var fight_action = document.getElementById('fight');                //たたかう
+var skill_action = document.getElementById('skill');                //すきる
+var block_action = document.getElementById('block');                //ぼうぎょ
+var escape_action = document.getElementById('escape');              //にげる
 var fighter_hp = document.getElementById('fighter_hp');
 var enemy_hp = document.getElementById('enemy_hp');
 var e_name = document.getElementById('enemy_name');
@@ -15,8 +16,9 @@ var img = [];
 let win_count = 0;
 let lose_count = 0;
 let buttle_count = 0;
-const explain_attack = '相手に[固定]ダメージ:20';
-const explain_skill = '相手に[ランダム]ダメージ:15~35';
+const explain_attack = '相手に[固定]ダメージ:20 ※低確率で2倍のダメージ';
+const explain_skill = '相手に[ランダム]ダメージ:15~35 ※低確率で2倍のダメージ';
+const explain_block = 'ダメージを半分に軽減する。ただしダメージ大幅減少。';
 
 
 
@@ -71,6 +73,8 @@ fight_action.addEventListener("mouseover", function(){
     explain_action.textContent= explain_attack;
     });
 
+
+
 /*----- [すきる]に関する処理 -----*/
 //クリックしたとき
 skill_action.addEventListener("click", function(){
@@ -89,6 +93,26 @@ skill_action.addEventListener("mouseover", function(){
 });
 
 
+
+/*----- [ぼうぎょ]に関する処理 -----*/
+//クリックしたとき
+block_action.addEventListener("click", function(){
+    //ゲームの全体管理を呼び出す
+    buttle_action_controller('block');
+
+    //終わりならゲーム終了させる
+    if(end_flg[0]){
+        event.stopPropagation();
+        setTimeout(() => {game_end(end_flg[1])}, 500);
+    }
+});
+//カーソルを合わせた時
+block_action.addEventListener("mouseover", function(){
+    explain_action.textContent = explain_block;
+});
+
+
+
 /*----- [にげる]に関する処理 -----*/
 //カーソルを合わせた時
 escape_action.addEventListener("mouseover", function(){
@@ -102,24 +126,39 @@ escape_action.addEventListener("click", function(event){
 
 //ダメージ計算
 function attack(attack_method){
-    randamAction = Math.floor(Math.random() * (1 - 10) + 10);
+    randomAction = Math.floor(Math.random() * (1 - 10) + 10);
     damage = 0;
     //こうげき
     if(attack_method == 'attack'){
         damage = 20;
+        block_flg = false;
     //すきる
     }else if(attack_method == 'skill') {
-        damage = Math.floor(Math.random() * (35 - 15) + 15);
-    }else if(attack_method == 'enemy'){
         damage = Math.floor(Math.random() * (40 - 15) + 15);
+        block_flg = false;
+    //ぼうぎょ
+    }else if(attack_method == 'block'){
+        damage = Math.floor(Math.random() * (15 - 10) + 10);
+        block_flg = true;
     }else{
         console.error("不正な値が入力されています");
         console.error("引数: " + attack_method);
     }
-
     //会心の一撃判定
-    //if(randamAction <= 3 || attack_method == 'skill' || attack_method == 'attack'){damage = damage*2}
-    return damage;
+    if(randomAction <= 3){damage = damage*2}
+    return [damage, block_flg];
+}
+
+//敵のダメージ計算
+function enemy_attack(enemy_attack_method,block_flg){
+    if(!block_flg){
+        damage = Math.floor(Math.random() * (35 - 15) + 15);
+        return damage;
+    }else {
+        damage = Math.floor(Math.random() * (35 - 15) + 15);
+        return Math.round(damage/2);
+    }
+
 }
 
 //勝敗判定
@@ -192,17 +231,17 @@ function game_end(flg){
 function buttle_action_controller(click){
     //ダメージ計算(敵側)
     eDamage = attack(click);
-    enemy[1]-=eDamage;
+    enemy[1]-=eDamage[0];
     //ダメージ計算(プレイヤー)  ※end_flgがtrueの場合、HP表示を行いゲーム終了
-    pDamage = attack('enemy');
+    pDamage = enemy_attack('enemy',eDamage[1]);
     player[1]-=pDamage;
 
     //勝敗判定と表示更新
     end_flg = check_buttle();
     if(end_flg[0] == false){
         //HP表示更新
-        update_content_continue(player[0],enemy[0],eDamage,pDamage,end_flg);
+        update_content_continue(player[0],enemy[0],eDamage[0],pDamage,end_flg);
     }else {
-        update_content_end(player[0],enemy[0],eDamage,pDamage,end_flg[1]);
+        update_content_end(player[0],enemy[0],eDamage[0],pDamage,end_flg[1]);
     }
 }
