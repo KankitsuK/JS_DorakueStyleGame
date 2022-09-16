@@ -18,6 +18,12 @@
 .fighter{
     text-align: left;
 }
+.f_state{
+    display: flex;
+    align-items: center;
+    grid-gap: 30px;
+    flex-wrap: nowrap;
+}
 
 /*----- コマンド部分 -----*/
 .infomation{

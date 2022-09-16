@@ -11,12 +11,19 @@
         <div class="field">
             <div class="enemy">
                 <img src="" class="motion" width="200" height="200" id="enemy_img"><br>
-                <p id="enemy_hp"></p>
+                <div class="e_state">
+                    <p id="enemy_name"></p>
+                    <p id="enemy_hp"></p>
+                </div>
             </div>
             <div class="effect"></div>
             <div class="fighter">
-                <img src="img/empty.png" width="200" height="200" class="motion"><br>
-                <p id="fighter_hp"></p>
+                <img src="img/Player.png" width="200" height="200" class="motion"><br>
+                <div class="f_state">
+                    <p>勇者</p>
+                    <p id="fighter_hp" width="85">HP:100</p>
+                </div>
+
             </div>
 
         </div>
@@ -35,6 +42,5 @@
         </div>
 
     </body>
-    <script src="js\character.js"></script>
     <script src="js\buttle.js"></script>
 </html>

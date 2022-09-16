@@ -7,14 +7,18 @@ var skill_action = document.getElementById('skill');//すきる
 var escape_action = document.getElementById('escape');//にげる
 var fighter_hp = document.getElementById('fighter_hp');
 var enemy_hp = document.getElementById('enemy_hp');
+var e_name = document.getElementById('enemy_name');
 
 var damage;
 var end_flg;
+var img = [];
 let win_count = 0;
 let lose_count = 0;
 let buttle_count = 0;
 const explain_attack = '相手に[固定]ダメージ:20';
 const explain_skill = '相手に[ランダム]ダメージ:15~35';
+
+
 
 /*-----キャラ生成-----*/
 //コンストラクタ
@@ -28,15 +32,16 @@ class Make_character{
 
 //敵の生成
 function make_enemy(){
-    //敵の画像生成
-    img_no = Math.floor(Math.random() * (6 - 1) + 1);
-    img = ["enemy01.png","enemy02.png","enemy03.png","enemy04.png","enemy05.png","enemy06.png"];
-    enemy_name = ["こうもり","ぷよスラ","シーツおばけ","ひのたま","パリピくらげ","ねこへいし"]
+    //敵の画像を出力する
+    for(i=1; i<=9; i++){img.push("enemy" + i + ".png")}
+    img_no = Math.floor(Math.random() * (img.length - 1) + 1);
+    enemy_name = ["こうもり","ぷよスラ","シーツおばけ","ひのたま","パリピくらげ","もんばん","どうながおばけ","ランタンかぼちゃ","ねこけんし"]
     enemy_img.src = "img/" + img[img_no];
-    //敵のHP、名前で敵を生成する
+    //敵のHP、名前を引数に敵を生成する
     hp_num = Math.floor(Math.random() * (200 - 150) + 150);
     enemy = new Make_character(enemy_name[img_no],hp_num);
-    enemy_hp.textContent='HP:'+ enemy[1];
+    enemy_hp.textContent = 'HP:'+ enemy[1];
+    e_name.textContent   = enemy_name[img_no];
 }
 //プレイヤーキャラの生成
 function make_player(){
@@ -106,7 +111,6 @@ function attack(attack_method){
     }else if(attack_method == 'skill') {
         damage = Math.floor(Math.random() * (35 - 15) + 15);
     }else if(attack_method == 'enemy'){
-        console.log(randamAction)
         damage = Math.floor(Math.random() * (40 - 15) + 15);
     }else{
         console.error("不正な値が入力されています");
@@ -114,7 +118,7 @@ function attack(attack_method){
     }
 
     //会心の一撃判定
-    if(randamAction <= 3 || attack_method == 'skill' || attack_method == 'attack'){damage = damage*2}
+    //if(randamAction <= 3 || attack_method == 'skill' || attack_method == 'attack'){damage = damage*2}
     return damage;
 }
 
@@ -168,7 +172,7 @@ function update_content_end(chara1,chara2,dm1,dm2,flg){
 function game_end(flg){
     //勝ったとき
     if(flg == 'win' || flg == 'narrow_victory'){
-        window.alert(player[0] + 'よくやった！ 厄介な魔物を倒したぞ');
+        window.alert(player[0] + 'よくやった！ 厄介な魔物を倒したぞ。しかし魔物はまだまだ沢山住み着いておる……');
         window.location.href = 'top_page.html';
     }else if (flg == 'lose') {
         window.alert('おお' +player[0]+ '！しんでしまうとはなさけない…。もう一度戦いなさい');
